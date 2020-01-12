@@ -1,0 +1,17 @@
+<html>
+
+<head>
+  {% if title %}
+  <title>{{ title }} - Tag Alert</title>
+  {% else %}
+  <title>Welcome to Tag Alert</title>
+  {% endif %}
+</head>
+
+<body>
+  <div>Tag Alert: <a href="/index">Home</a></div>
+  <hr>
+  {% block content %}{% endblock %}
+</body>
+
+</html>
