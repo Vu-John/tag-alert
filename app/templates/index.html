@@ -5,5 +5,11 @@
 <h1>Hi, {{ current_user.username }}!</h1>
 {% if form %}
 {{ wtf.quick_form(form) }}
+<br>
 {% endif %}
+{% for tag in tags %}
+<span class="badge badge-primary">{{ tag.text }}
+  <a href="{{ url_for('main.tag_remove', tag_text=tag.text) }}">x</a>
+</span>
+{% endfor %}
 {% endblock %}

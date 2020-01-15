@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField
+from wtforms import StringField, SubmitField, TextAreaField
 from wtforms.validators import ValidationError, DataRequired
 from app.models import User
 
@@ -17,3 +17,8 @@ class EditProfileForm(FlaskForm):
             user = User.query.filter_by(username=self.username.data).first()
             if user is not None:
                 raise ValidationError('Please use a different username.')
+
+
+class TagForm(FlaskForm):
+    post = TextAreaField('Enter a tag', validators=[DataRequired()])
+    submit = SubmitField('Submit')
