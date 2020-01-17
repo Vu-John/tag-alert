@@ -14,6 +14,13 @@ users_tags = db.Table('users_tags',
                       db.Column('tag_id', db.Integer, db.ForeignKey('tag.id'))
                       )
 
+users_subreddits = db.Table('users_subreddits',
+                            db.Column('user_id', db.Integer,
+                                      db.ForeignKey('user.id')),
+                            db.Column('subreddit_id', db.Integer,
+                                      db.ForeignKey('subreddit.id'))
+                            )
+
 
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -21,8 +28,12 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(120), index=True, unique=True)
     password_hash = db.Column(db.String(128))
     last_seen = db.Column(db.DateTime, default=datetime.utcnow)
-    tags = db.relationship('Tag', secondary=users_tags,
-                           backref='taggers', lazy='dynamic')
+    tags = db.relationship(
+        'Tag', secondary=users_tags, backref='taggers', lazy='dynamic'
+    )
+    subreddits = db.relationship(
+        'Subreddit', secondary=users_subreddits, lazy='dynamic'
+    )
 
     def __repr__(self):
         return f'<User {self.username}>'
@@ -65,4 +76,13 @@ class Tag(db.Model):
     users = db.relationship('User', secondary=users_tags, lazy='dynamic')
 
     def __repr__(self):
-        return '<Tag {}>'.format(self.text)
+        return f'<Tag {self.text}>'
+
+
+class Subreddit(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    sub = db.Column(db.String(20), index=True, unique=True)
+    users = db.relationship('User', secondary=users_subreddits, lazy='dynamic')
+
+    def __repr__(self):
+        return f'<Subreddit {self.sub}>'

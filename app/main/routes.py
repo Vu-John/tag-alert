@@ -1,10 +1,12 @@
+import json
 from datetime import datetime
 from flask import render_template, flash, redirect, url_for, request
 from flask_login import current_user, login_required
 from app import db
-from app.main.forms import EditProfileForm, TagForm
-from app.models import User, Tag
+from app.main.forms import EditProfileForm, IndexForm
+from app.models import User, Tag, Subreddit
 from app.main import bp
+from app.reddit import sub_exists, get_tagged_submissions
 
 
 @bp.before_app_request
@@ -18,23 +20,56 @@ def before_request():
 @bp.route('/index', methods=['GET', 'POST'])
 @login_required
 def index():
-    form = TagForm()
-    if form.validate_on_submit():
+    form = IndexForm()
+    if form.tag_form.submit_tag.data and form.tag_form.validate(form):
+        tag_input = form.tag_form.tag.data
         query_user_tag = current_user.tags.filter(
-            Tag.text == form.post.data).first()
+            Tag.text == tag_input).first()
         if query_user_tag is not None:
             flash('You have already added this tag')
         else:
-            tag = Tag.query.filter_by(text=form.post.data).first()
+            tag = Tag.query.filter_by(text=tag_input).first()
             if tag is None:
-                tag = Tag(text=form.post.data)
+                tag = Tag(text=tag_input)
                 db.session.add(tag)
             current_user.tags.append(tag)
             db.session.commit()
             flash('Your tag has been saved')
         return redirect(url_for('main.index'))
-    tags = current_user.tags.all()
-    return render_template('index.html', title='Home', form=form, tags=tags)
+    if (form.subreddit_form.submit_subreddit.data and
+            form.subreddit_form.validate(form)):
+        subreddit_input = form.subreddit_form.subreddit.data
+        if not sub_exists(subreddit_input):
+            flash(
+                f'There aren\'t any subreddit with name: {subreddit_input}')
+        else:
+            query_user_subreddit = current_user.subreddits \
+                .filter(Subreddit.sub == subreddit_input).first()
+            if query_user_subreddit is not None:
+                flash('You have already added this subreddit')
+            else:
+                subreddit = Subreddit.query.filter_by(
+                    sub=subreddit_input).first()
+                if subreddit is None:
+                    subreddit = Subreddit(
+                        sub=subreddit_input)
+                    db.session.add(subreddit)
+                current_user.subreddits.append(subreddit)
+                db.session.commit()
+                flash('Subreddit saved')
+            return redirect(url_for('main.index'))
+    tags = [tag.text for tag in current_user.tags.all()]
+    subreddits = current_user.subreddits.all()
+    submissions = get_tagged_submissions()
+    return render_template(
+        'index.html',
+        title='Home',
+        form=form,
+        tags=tags,
+        subreddits=subreddits,
+        submissions=submissions,
+        data=json.dumps(tags)
+    )
 
 
 @bp.route('/user/<username>')
@@ -69,4 +104,17 @@ def tag_remove(tag_text):
         current_user.tags.remove(tag)
         db.session.commit()
         flash(f'Tag: {tag_text} has been removed.')
+    return redirect(url_for('main.index'))
+
+
+@bp.route('/subreddit/remove/<subreddit>')
+@login_required
+def subreddit_remove(subreddit):
+    subreddit = Subreddit.query.filter_by(sub=subreddit).first()
+    if subreddit is None:
+        flash(f'Subreddit: {subreddit.sub} not found.')
+    else:
+        current_user.subreddits.remove(subreddit)
+        db.session.commit()
+        flash(f'Subreddit: {subreddit.sub} has been removed.')
     return redirect(url_for('main.index'))

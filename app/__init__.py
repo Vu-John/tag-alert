@@ -1,6 +1,7 @@
 import logging
-from logging.handlers import SMTPHandler, RotatingFileHandler
 import os
+import praw
+from logging.handlers import SMTPHandler, RotatingFileHandler
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
@@ -9,6 +10,7 @@ from flask_mail import Mail
 from flask_bootstrap import Bootstrap
 from flask_moment import Moment
 from config import Config
+from flask_wtf.csrf import CSRFProtect
 
 
 db = SQLAlchemy()
@@ -18,6 +20,12 @@ login.login_view = 'auth.login'
 mail = Mail()
 bootstrap = Bootstrap()
 moment = Moment()
+csrf = CSRFProtect()
+reddit = praw.Reddit(
+    client_id=os.environ.get('REDDIT_CLIENT_ID'),
+    client_secret=os.environ.get('REDDIT_CLIENT_SECRET'),
+    user_agent=os.environ.get('REDDIT_USERAGENT')
+)
 
 
 def create_app(config_class=Config):
@@ -30,6 +38,7 @@ def create_app(config_class=Config):
     mail.init_app(app)
     bootstrap.init_app(app)
     moment.init_app(app)
+    csrf.init_app(app)
 
     from app.errors import bp as errors_bp
     app.register_blueprint(errors_bp)

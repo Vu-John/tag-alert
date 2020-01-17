@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, TextAreaField
+from wtforms import StringField, SubmitField, TextAreaField, FormField
 from wtforms.validators import ValidationError, DataRequired
 from app.models import User
 
@@ -20,5 +20,15 @@ class EditProfileForm(FlaskForm):
 
 
 class TagForm(FlaskForm):
-    post = TextAreaField('Enter a tag', validators=[DataRequired()])
-    submit = SubmitField('Submit')
+    tag = TextAreaField('Enter a tag', validators=[DataRequired()])
+    submit_tag = SubmitField('Submit')
+
+
+class SubredditForm(FlaskForm):
+    subreddit = TextAreaField('Enter a subreddit', validators=[DataRequired()])
+    submit_subreddit = SubmitField('Submit')
+
+
+class IndexForm(FlaskForm):
+    tag_form = FormField(TagForm)
+    subreddit_form = FormField(SubredditForm)

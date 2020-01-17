@@ -4,12 +4,53 @@
 {% block app_content %}
 <h1>Hi, {{ current_user.username }}!</h1>
 {% if form %}
-{{ wtf.quick_form(form) }}
+<form method="POST" action="{{ url_for('main.index') }}">
+  {{ form.csrf_token }}
+  {{wtf.quick_form(form.subreddit_form)}}
+  <br>
+  <br>
+  {{wtf.quick_form(form.tag_form)}}
+</form>
 <br>
 {% endif %}
-{% for tag in tags %}
-<span class="badge badge-primary">{{ tag.text }}
-  <a href="{{ url_for('main.tag_remove', tag_text=tag.text) }}">x</a>
+
+{% for subreddit in subreddits %}
+<span class="badge badge-primary">{{ subreddit.sub }}
+  <a href="{{ url_for('main.subreddit_remove', subreddit=subreddit.sub) }}">x</a>
 </span>
 {% endfor %}
+<br>
+<br>
+{% for tag in tags %}
+<span class="badge badge-primary">{{ tag }}
+  <a href="{{ url_for('main.tag_remove', tag_text=tag) }}">x</a>
+</span>
+{% endfor %}
+<br>
+<br>
+<ul class="list-group" id="submissions_list">
+  {% for submission in submissions %}
+  <li class="list-group-item" id="{{ submission.id }}"><a href="https://www.reddit.com{{ submission.permalink }}"
+      target="_blank">{{ submission.title }}</a></li>
+  {% endfor %}
+</ul>
+{% endblock %}
+
+{% block scripts %}
+{{super()}}
+<script type="text/javascript">
+  var highlightRe = /<span style="background-color:yellow;">(.*?)<\/span>/g
+  var highlightHtml = '<span style="background-color:yellow;font-weight: bold;">$1</span>';
+  $(function () {
+    var tags = {{ data | safe }};
+    var listItems = $("#submissions_list li");
+    listItems.each(function (index, li) {
+      var title = $(`#${li.id} a`).html().replace(highlightRe, '$1');
+      tags.forEach(tag => {
+        title = title.replace(new RegExp('(' + tag + ')', 'gi'), highlightHtml);
+        $(`#${li.id} a`).html(title);
+      });
+    });
+  });
+</script>
 {% endblock %}
