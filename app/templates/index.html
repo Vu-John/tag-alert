@@ -15,16 +15,14 @@
 {% endif %}
 
 {% for subreddit in subreddits %}
-<span class="badge badge-primary">{{ subreddit.sub }}
-  <a href="{{ url_for('main.subreddit_remove', subreddit=subreddit.sub) }}">x</a>
-</span>
+<span class="label label-warning">{{ subreddit.sub }} | <a href="{{ url_for('main.subreddit_remove', subreddit=subreddit.sub) }}" style="color:white;">x</a></span>
+{% if not loop.last %}&nbsp;{% endif %}
 {% endfor %}
 <br>
 <br>
 {% for tag in tags %}
-<span class="badge badge-primary">{{ tag }}
-  <a href="{{ url_for('main.tag_remove', tag_text=tag) }}">x</a>
-</span>
+<span class="label label-default">{{ tag }} | <a href="{{ url_for('main.tag_remove', tag_text=tag) }}" style="color:white;">x</a></span>
+{% if not loop.last %}&nbsp;{% endif %}
 {% endfor %}
 <br>
 <br>
