@@ -28,6 +28,9 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(120), index=True, unique=True)
     password_hash = db.Column(db.String(128))
     last_seen = db.Column(db.DateTime, default=datetime.utcnow)
+    send_email = db.Column(db.Boolean, default=False)
+    last_email_sent = db.Column(db.DateTime, default=datetime.utcnow)
+
     tags = db.relationship(
         'Tag', secondary=users_tags, backref='taggers', lazy='dynamic'
     )

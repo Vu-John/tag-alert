@@ -1,11 +1,12 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, TextAreaField, FormField
+from wtforms import BooleanField, StringField, SubmitField, TextAreaField, FormField
 from wtforms.validators import ValidationError, DataRequired
 from app.models import User
 
 
 class EditProfileForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
+    send_email = BooleanField('Send Email')
     submit = SubmitField('Submit')
 
     def __init__(self, original_username, *args, **kwargs):

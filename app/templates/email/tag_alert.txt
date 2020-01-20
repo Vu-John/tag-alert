@@ -1,0 +1,8 @@
+Dear {{ user.username }},
+
+{% for submission in submissions %}
+    {{ submission.title }}
+{% endfor %}
+
+Sincerely,
+The Tag Alert Team

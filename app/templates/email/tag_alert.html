@@ -1,0 +1,11 @@
+<p>Dear {{ user.username }},</p>
+
+<ul>
+{% for submission in submissions %}
+    <li id="{{ submission.id }}">
+        <a href="https://www.reddit.com{{ submission.permalink }}" target="_blank">{{ submission.title }}</a></li>
+{% endfor %}
+</ul>
+
+<p>Sincerely,</p>
+<p>The Tag Alert Team</p>
