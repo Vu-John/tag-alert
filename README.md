@@ -18,6 +18,7 @@ Create a `.flaskenv` file in the root directory
 FLASK_APP=tag_alert.py
 SECRET_KEY=<SECRET_KEY_YOU_WILL_NEVER_GUESS>
 SQLALCHEMY_DATABASE_URI=<DATA_BASE_URL> # (Optional) If not set SQLite database will be used
+SEND_ALERTS_MINUTES=<0-59_MINUTES> # (Optional) Default is set to every 30 minutes
 
 # Mail Credentials
 MAIL_SERVER=smtp.googlemail.com

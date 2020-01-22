@@ -13,4 +13,5 @@ class Config(object):
     MAIL_USE_TLS = os.environ.get('MAIL_USE_TLS') is not None
     MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
     MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
-    ADMINS = ['your-email@example.com']
+    ADMINS = [os.environ.get('ADMIN_EMAIL')] or ['your-email@example.com']
+    SEND_ALERTS_MINUTES = os.environ.get('SEND_ALERTS_MINUTES') or 30

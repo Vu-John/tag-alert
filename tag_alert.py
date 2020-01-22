@@ -9,11 +9,11 @@ app = create_app()
 # Do this to prevent the scheduler from running in the master process
 if not app.debug or os.environ.get('WERKZEUG_RUN_MAIN') == 'true':
     scheduler.start()
+    minutes = app.config['SEND_ALERTS_MINUTES']
     app.apscheduler.add_job(
         func=send_alerts,
         trigger='cron',
-        minute='*/10',
-        hour='*',
+        minute=f'*/{minutes}',
         args=[app],
         id="send_alerts"
     )
