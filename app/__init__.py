@@ -23,11 +23,17 @@ bootstrap = Bootstrap()
 moment = Moment()
 csrf = CSRFProtect()
 scheduler = APScheduler()
-reddit = praw.Reddit(
-    client_id=os.environ.get('REDDIT_CLIENT_ID'),
-    client_secret=os.environ.get('REDDIT_CLIENT_SECRET'),
-    user_agent=os.environ.get('REDDIT_USERAGENT')
-)
+reddit = None
+if (
+    os.environ.get('REDDIT_CLIENT_ID') and
+    os.environ.get('REDDIT_CLIENT_SECRET') and
+    os.environ.get('REDDIT_USERAGENT')
+):
+    reddit = praw.Reddit(
+        client_id=os.environ.get('REDDIT_CLIENT_ID'),
+        client_secret=os.environ.get('REDDIT_CLIENT_SECRET'),
+        user_agent=os.environ.get('REDDIT_USERAGENT')
+    )
 
 
 def create_app(config_class=Config):
